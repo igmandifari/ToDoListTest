@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">To Do App</string>
+    <string-array name="filter_options">
+        <item>No Filter</item>
+        <item>Sorting by Alphabet</item>
+        <item>Sorting by Created At</item>
+    </string-array>
 </resources>
