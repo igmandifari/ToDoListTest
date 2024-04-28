@@ -55,11 +55,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.insert(TABLE_NAME, null, values);
     }
 
-    public void updateTask(int id , String task){
+    public void updateTask(int id, String task, int priority) {
         db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COL_2 , task);
-        db.update(TABLE_NAME , values , "ID=?" , new String[]{String.valueOf(id)});
+        values.put(COL_2, task);
+        values.put(COL_4, priority);
+        db.update(TABLE_NAME, values, "ID=?", new String[]{String.valueOf(id)});
     }
 
     public void updateStatus(int id , int status){

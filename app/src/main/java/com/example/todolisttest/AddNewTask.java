@@ -10,8 +10,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +23,8 @@ import com.example.todolisttest.Model.ToDoModel;
 import com.example.todolisttest.Utils.DataBaseHelper;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import java.util.Objects;
+
 public class AddNewTask extends BottomSheetDialogFragment {
 
     public static final String TAG = "AddNewTask";
@@ -28,6 +32,7 @@ public class AddNewTask extends BottomSheetDialogFragment {
     //widgets
     private EditText mEditText;
     private Button mSaveButton;
+    private Spinner mPrioritySpinner;
 
     private DataBaseHelper myDb;
 
@@ -49,8 +54,17 @@ public class AddNewTask extends BottomSheetDialogFragment {
 
         mEditText = view.findViewById(R.id.edittext);
         mSaveButton = view.findViewById(R.id.button_save);
+        mPrioritySpinner = view.findViewById(R.id.priority_spinner);
 
         myDb = new DataBaseHelper(getActivity());
+
+        Spinner mPrioritySpinner = view.findViewById(R.id.priority_spinner);
+
+        String[] priorityLevels = {"High", "Medium", "Low"};
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_spinner_item, priorityLevels);
+
+        mPrioritySpinner.setAdapter(adapter);
 
         boolean isUpdate = false;
 
@@ -93,32 +107,17 @@ public class AddNewTask extends BottomSheetDialogFragment {
             @Override
             public void onClick(View v) {
                 String text = mEditText.getText().toString();
-
-                if (finalIsUpdate){
-                    myDb.updateTask(bundle.getInt("id") , text);
-                }else{
-                    ToDoModel item = new ToDoModel();
-                    item.setTask(text);
-                    item.setStatus(0);
-                    myDb.insertTask(item);
-                }
-                dismiss();
-
-            }
-        });
-        mSaveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String text = mEditText.getText().toString();
+                int priorityIndex = mPrioritySpinner.getSelectedItemPosition();
 
                 if (finalIsUpdate) {
-                    myDb.updateTask(bundle.getInt("id"), text);
+                    myDb.updateTask(bundle.getInt("id"), text, priorityIndex);
                 } else {
                     ToDoModel item = new ToDoModel();
                     item.setTask(text);
                     item.setStatus(0);
+                    item.setPriority(priorityIndex);
                     myDb.insertTask(item);
-                    Log.d("AddNewTask", "Data baru disimpan: " + text);
+                    Log.d("AddNewTask", "Data baru disimpan: " + text + " dengan prioritas " + priorityIndex);
                 }
                 dismiss();
             }
