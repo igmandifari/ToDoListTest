@@ -21,6 +21,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static  final String COL_1 = "ID";
     private static  final String COL_2 = "TASK";
     private static  final String COL_3 = "STATUS";
+    private static final String COL_4 = "PRIORITY";
+    private static final String COL_5 = "DEADLINE";
 
 
     public DataBaseHelper(@Nullable Context context ) {
@@ -29,7 +31,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT , TASK TEXT , STATUS INTEGER)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + "(" +
+                COL_1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COL_2 + " TEXT, " +
+                COL_3 + " INTEGER, " +
+                COL_4 + " INTEGER, " +
+                COL_5 + " LONG)");
     }
 
     @Override
@@ -38,12 +45,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void insertTask(ToDoModel model){
+    public void insertTask(ToDoModel model) {
         db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COL_2 , model.getTask());
-        values.put(COL_3 , 0);
-        db.insert(TABLE_NAME , null , values);
+        values.put(COL_2, model.getTask());
+        values.put(COL_3, model.getStatus());
+        values.put(COL_4, model.getPriority());
+        values.put(COL_5, model.getDeadline());
+        db.insert(TABLE_NAME, null, values);
     }
 
     public void updateTask(int id , String task){
@@ -66,33 +75,31 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     @SuppressLint("Range")
-    public List<ToDoModel> getAllTasks(){
-
+    public List<ToDoModel> getAllTasks() {
         db = this.getWritableDatabase();
         Cursor cursor = null;
         List<ToDoModel> modelList = new ArrayList<>();
 
-        db.beginTransaction();
         try {
-            cursor = db.query(TABLE_NAME , null , null , null , null , null , null);
-            if (cursor !=null){
-                if (cursor.moveToFirst()){
-                    do {
-                        ToDoModel task = new ToDoModel();
-                        task.setId(cursor.getInt(cursor.getColumnIndex(COL_1)));
-                        task.setTask(cursor.getString(cursor.getColumnIndex(COL_2)));
-                        task.setStatus(cursor.getInt(cursor.getColumnIndex(COL_3)));
-                        modelList.add(task);
-
-                    }while (cursor.moveToNext());
-                }
+            cursor = db.query(TABLE_NAME, null, null, null, null, null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    ToDoModel task = new ToDoModel();
+                    task.setId(cursor.getInt(cursor.getColumnIndex(COL_1))); // Akses ID
+                    task.setTask(cursor.getString(cursor.getColumnIndex(COL_2))); // Akses TASK
+                    task.setStatus(cursor.getInt(cursor.getColumnIndex(COL_3))); // Akses STATUS
+                    task.setPriority(cursor.getInt(cursor.getColumnIndex(COL_4))); // Akses PRIORITY
+                    task.setDeadline(cursor.getLong(cursor.getColumnIndex(COL_5))); // Akses DEADLINE
+                    modelList.add(task);
+                } while (cursor.moveToNext());
             }
-        }finally {
-            db.endTransaction();
-            assert cursor != null;
-            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
         return modelList;
     }
-
 }

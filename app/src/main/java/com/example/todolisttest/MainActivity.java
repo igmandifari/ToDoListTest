@@ -20,6 +20,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnDialogCloseListner {
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
     private List<ToDoModel> mList;
     private ToDoAdapter adapter;
     private Spinner filterSpinner;
+    private Spinner filterDeadlineSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
         setContentView(R.layout.activity_main);
 
         filterSpinner = findViewById(R.id.filter_spinner);
+        filterDeadlineSpinner = findViewById(R.id.filter_deadline_spinner);
         mRecyclerview = findViewById(R.id.recyclerview);
         fab = findViewById(R.id.fab);
         myDB = new DataBaseHelper(MainActivity.this);
@@ -54,10 +57,23 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
         fab.setOnClickListener(v -> AddNewTask.newInstance().show(getSupportFragmentManager() , AddNewTask.TAG));
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new RecyclerViewTouchHelper(adapter));
         itemTouchHelper.attachToRecyclerView(mRecyclerview);
+
         filterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                filterTasks(position);
+                filterTasks(position, -1);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing
+            }
+        });
+
+        filterDeadlineSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                filterTasks(-1, position);
             }
 
             @Override
@@ -67,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
         });
     }
 
-    private void filterTasks(int filterOption) {
+    private void filterTasks(int filterOption, int filterDeadlineOption) {
         List<ToDoModel> filteredList = new ArrayList<>();
 
         switch (filterOption) {
@@ -79,9 +95,13 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
                 filteredList.addAll(mList);
                 break;
             case 2:
-//                Collections.sort(mList, (task1, task2) -> Long.compare(task2.getTimestamp(), task1.getTimestamp()));
-//                filteredList.addAll(mList);
+                Collections.sort(mList, Comparator.comparingInt(ToDoModel::getPriority));
+                filteredList.addAll(mList);
                 break;
+        }
+
+        if (filterDeadlineOption == 1) {
+            Collections.sort(filteredList, Comparator.comparingLong(ToDoModel::getDeadline));
         }
 
         adapter.setTasks(filteredList);

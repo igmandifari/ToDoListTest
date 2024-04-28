@@ -1,8 +1,14 @@
 <resources>
     <string name="app_name">To Do App</string>
+    <string name="to_do_tasks">To Do Tasks</string>
     <string-array name="filter_options">
-        <item>No Filter</item>
+        <item>No Sorting</item>
         <item>Sorting by Alphabet</item>
+        <item>Sorting by Priority</item>
         <item>Sorting by Created At</item>
+    </string-array>
+    <string-array name="filter_deadline_options">
+        <item>No Filter</item>
+        <item>Filter by Deadline Date</item>
     </string-array>
 </resources>

@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
-        android:text="To Do Tasks"
+        android:text="@string/to_do_tasks"
         android:textColor="#000"
         android:textSize="32sp"
         android:textStyle="bold" />
@@ -25,11 +25,19 @@
         android:layout_marginTop="10dp"
         android:entries="@array/filter_options" />
 
+    <Spinner
+        android:id="@+id/filter_deadline_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/filter_spinner"
+        android:layout_marginTop="10dp"
+        android:entries="@array/filter_deadline_options" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/filter_spinner"
+        android:layout_below="@id/filter_deadline_spinner"
         android:nestedScrollingEnabled="true" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

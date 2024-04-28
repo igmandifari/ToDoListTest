@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -105,7 +106,26 @@ public class AddNewTask extends BottomSheetDialogFragment {
 
             }
         });
+        mSaveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String text = mEditText.getText().toString();
+
+                if (finalIsUpdate) {
+                    myDb.updateTask(bundle.getInt("id"), text);
+                } else {
+                    ToDoModel item = new ToDoModel();
+                    item.setTask(text);
+                    item.setStatus(0);
+                    myDb.insertTask(item);
+                    Log.d("AddNewTask", "Data baru disimpan: " + text);
+                }
+                dismiss();
+            }
+        });
     }
+
+
 
     @Override
     public void onDismiss(@NonNull DialogInterface dialog) {
